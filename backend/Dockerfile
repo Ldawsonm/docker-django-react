@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y \
   netcat \
   libpq-dev \
   postgresql-client \
+  dos2unix \
   && apt-get clean
 
 # install temp dependencies for build of pyscopg2 etc
@@ -29,9 +30,7 @@ COPY ./entrypoint.sh .
 COPY . .
 
 # make sure entrypoint.sh can be run in the container
-RUN apt-get update && apt-get install -y dos2unix \
-    && dos2unix /app/entrypoint.sh \
-    && chmod +x /app/entrypoint.sh
+RUN dos2unix ./entrypoint.sh
 
 # run entrypoint.sh
 ENTRYPOINT ["/srv/app/entrypoint.sh"]
