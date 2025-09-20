@@ -19,6 +19,7 @@ services:
     build: ./frontend
     container_name: dev-react
     command: npm start
+    stdin_open: true
     ports:
       - 3001:3000
     env_file:
@@ -26,6 +27,7 @@ services:
     tty: true
     environment:
       - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
     volumes:
       - ./frontend/:/srv/app
       - node_modules:/srv/app/node_modules

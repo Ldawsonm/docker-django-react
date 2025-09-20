@@ -28,5 +28,10 @@ COPY ./entrypoint.sh .
 # copy project
 COPY . .
 
+# make sure entrypoint.sh can be run in the container
+RUN apt-get update && apt-get install -y dos2unix \
+    && dos2unix /app/entrypoint.sh \
+    && chmod +x /app/entrypoint.sh
+
 # run entrypoint.sh
 ENTRYPOINT ["/srv/app/entrypoint.sh"]

@@ -1,3 +1,11 @@
+## Prerequisites
+Docker
+
+## Instructions to start
+```sh
+$> docker-compose up --build
+```
+
 # docker-django-react
 
 ## Project Status
