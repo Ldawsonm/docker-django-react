@@ -4,3 +4,8 @@ djangorestframework-simplejwt>=5.3.1
 psycopg2>=2.9.9
 pytest-asyncio>=0.23.2
 pytest-django>=4.7.0
+faster-whisper @ https://github.com/SYSTRAN/faster-whisper/archive/refs/tags/v1.2.0.tar.gz
+moviepy>=2.2.1
+beautifulsoup4>=4.13.5
+certifi>=2025.8.3
+yt-dlp>=2025.9.5

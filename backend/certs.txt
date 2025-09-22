@@ -1,0 +1,69 @@
+CONNECTED(00000003)
+---
+Certificate chain
+ 0 s:C = US, ST = Michigan, L = Lansing, O = Michigan House of Representatives, CN = *.house.mi.gov
+   i:C = US, O = DigiCert Inc, CN = DigiCert Global G2 TLS RSA SHA256 2020 CA1
+-----BEGIN CERTIFICATE-----
+MIIG9DCCBdygAwIBAgIQASua2NEIioipkoAOnb6epDANBgkqhkiG9w0BAQsFADBZ
+MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMTMwMQYDVQQDEypE
+aWdpQ2VydCBHbG9iYWwgRzIgVExTIFJTQSBTSEEyNTYgMjAyMCBDQTEwHhcNMjUw
+NjMwMDAwMDAwWhcNMjYwNzMxMjM1OTU5WjB3MQswCQYDVQQGEwJVUzERMA8GA1UE
+CBMITWljaGlnYW4xEDAOBgNVBAcTB0xhbnNpbmcxKjAoBgNVBAoTIU1pY2hpZ2Fu
+IEhvdXNlIG9mIFJlcHJlc2VudGF0aXZlczEXMBUGA1UEAwwOKi5ob3VzZS5taS5n
+b3YwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDIveG4kuv/+udKFsfy
+D6bp2qZNzsVWZRrd5VFqigR5dhtFhXar4hV4rbX//Ol+6S85baDKNcf2+4czTUxF
+osNhSGYs588nAmE4k9pPfehHs0YNUlzZY1v/uvcNHdNh54pOrfZ4zOHHhhlj8zqT
+LPFFppksfvLhsRjrTNiCGANk6XN9aJD3MFHYFhsjY4xABHYfRxNNbUghFmk8CuxU
+3EpuTHLz2Xg1iVgCraohOCGGC9V8fQ4HRZTkjxnAUitnCQLR1rRX1ax67LEzy7+f
+/u5zlLygDzAtkK408J+ZVU+mTFIK6GVG4Trcqq6uGtNT9IHdJ+ngnZsVFoDfgGNM
+VYy5AgMBAAGjggOYMIIDlDAfBgNVHSMEGDAWgBR0hYDAZsffN97PvSk3qgMdvu3N
+FzAdBgNVHQ4EFgQUs/PlAJ0kzZkQ8C/S57TMDOJBC2owJwYDVR0RBCAwHoIOKi5o
+b3VzZS5taS5nb3aCDGhvdXNlLm1pLmdvdjA+BgNVHSAENzA1MDMGBmeBDAECAjAp
+MCcGCCsGAQUFBwIBFhtodHRwOi8vd3d3LmRpZ2ljZXJ0LmNvbS9DUFMwDgYDVR0P
+AQH/BAQDAgWgMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjCBnwYDVR0f
+BIGXMIGUMEigRqBEhkJodHRwOi8vY3JsMy5kaWdpY2VydC5jb20vRGlnaUNlcnRH
+bG9iYWxHMlRMU1JTQVNIQTI1NjIwMjBDQTEtMS5jcmwwSKBGoESGQmh0dHA6Ly9j
+cmw0LmRpZ2ljZXJ0LmNvbS9EaWdpQ2VydEdsb2JhbEcyVExTUlNBU0hBMjU2MjAy
+MENBMS0xLmNybDCBhwYIKwYBBQUHAQEEezB5MCQGCCsGAQUFBzABhhhodHRwOi8v
+b2NzcC5kaWdpY2VydC5jb20wUQYIKwYBBQUHMAKGRWh0dHA6Ly9jYWNlcnRzLmRp
+Z2ljZXJ0LmNvbS9EaWdpQ2VydEdsb2JhbEcyVExTUlNBU0hBMjU2MjAyMENBMS0x
+LmNydDAMBgNVHRMBAf8EAjAAMIIBfgYKKwYBBAHWeQIEAgSCAW4EggFqAWgAdwDX
+bX0Q0af1d8LH6V/XAL/5gskzWmXh0LMBcxfAyMVpdwAAAZfBMfaxAAAEAwBIMEYC
+IQC/TNRgsWQF/mH6XdFyN5Pm7EKHPjS0UyD+LRpvUbbGNAIhANDiwO9UR680IiOy
+WsqYydoSmvPzVV0JW2rsW027f70RAHUAwjF+V0UZo0XufzjespBB68fCIVoiv3/V
+ta12mtkOUs0AAAGXwTH26wAABAMARjBEAiBVYNxSYmWVt2fTDoEAs0bRcshm95ux
+a50EsVGzjWTHyQIgUbKV2r0u9/fNmOAUOoa+H+m9fU3LXEtkn6VdgWVcOZgAdgCU
+TkOH+uzB74HzGSQmqBhlAcfTXzgCAT9yZ31VNy4Z2AAAAZfBMfcGAAAEAwBHMEUC
+IGGPpBu0OTRzRs1c21b92wurQwHCSxhgDA3H8UBYwU+iAiEA3QoW+P8v6w5pU+DF
+RBM7t6J0gyQpwFZZHXVit4rhsf8wDQYJKoZIhvcNAQELBQADggEBAEo8PCWXPChz
+lX7J+4/+9kXTr8eIsld16/yHqIl9CegC3mNiMe9mqRiZquyr8lXwwzlcqU6Ydo0B
+LJVjGtlc9kV1QVSsFiJqn4TXlezWlZolL8gLcDfne/184mkL+DY6yFdTX7WNtrsI
+9boRhO65KhaSx9axsfM4k3R3Nfen7jXldhGkyYZGD87EHD5ghQ2TyfRpri3pwQR2
+QX3lbdZUA6pEX3Oku1VK6dKgR2nl23bLewu4kHlPd4inFB8Ct2ZEj6VvaA0Lye12
+HjDa/0RQS/hhbHWcKEaDmpgpb858iRQUxKPqU7R/75NmUk/Xks2lWBbpUd7dlcFA
+AG0AxoOX2i0=
+-----END CERTIFICATE-----
+---
+Server certificate
+subject=C = US, ST = Michigan, L = Lansing, O = Michigan House of Representatives, CN = *.house.mi.gov
+
+issuer=C = US, O = DigiCert Inc, CN = DigiCert Global G2 TLS RSA SHA256 2020 CA1
+
+---
+No client certificate CA names sent
+Peer signing digest: SHA256
+Peer signature type: RSA-PSS
+Server Temp Key: X25519, 253 bits
+---
+SSL handshake has read 2274 bytes and written 384 bytes
+Verification error: unable to verify the first certificate
+---
+New, TLSv1.3, Cipher is TLS_AES_256_GCM_SHA384
+Server public key is 2048 bit
+Secure Renegotiation IS NOT supported
+Compression: NONE
+Expansion: NONE
+No ALPN negotiated
+Early data was not sent
+Verify return code: 21 (unable to verify the first certificate)
+---
