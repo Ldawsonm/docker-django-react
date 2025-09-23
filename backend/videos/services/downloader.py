@@ -2,20 +2,20 @@
 # import yt_dlp
 # from pathlib import Path
 
-def download_video(url: str, output_dir="downloads") -> str:
-    """
-    Downloads a video and returns the local file path.
-    """
-    Path(output_dir).mkdir(exist_ok=True)
-    # yt-dlp handles many formats robustly
-    result = subprocess.run(
-        ["yt-dlp", "-S", "+size,+br", "--no-check-certificates","-o", f"{output_dir}/%(title)s.%(ext)s", url],
-        capture_output=True, text=True
-    )
-    if result.returncode != 0:
-        raise RuntimeError(f"Download failed: {result.stderr}")
-    # yt-dlp prints path to stdout in verbose mode; you can also compute it
-    return output_dir
+# def download_video(url: str, output_dir="downloads") -> str:
+#     """
+#     Downloads a video and returns the local file path.
+#     """
+#     Path(output_dir).mkdir(exist_ok=True)
+#     # yt-dlp handles many formats robustly
+#     result = subprocess.run(
+#         ["yt-dlp", "-S", "+size,+br", "--no-check-certificates","-o", f"{output_dir}/%(title)s.%(ext)s", url],
+#         capture_output=True, text=True
+#     )
+#     if result.returncode != 0:
+#         raise RuntimeError(f"Download failed: {result.stderr}")
+#     # yt-dlp prints path to stdout in verbose mode; you can also compute it
+#     return output_dir
 import requests
 from pathlib import Path
 
@@ -64,7 +64,7 @@ def download_video(url: str, output_dir: str = "downloads"):
     mp3_path = os.path.join(output_dir, os.path.basename(url).rsplit(".", 1)[0] + ".mp3")
 
     # Stream download the mp4
-    with requests.get(url, stream=True) as r:
+    with requests.get(url, stream=True, verify=False) as r:
         r.raise_for_status()
         with open(temp_mp4, "wb") as f:
             for chunk in r.iter_content(chunk_size=8192):

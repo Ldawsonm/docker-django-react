@@ -41,6 +41,7 @@ class HouseScraper(BaseScraper):
         for link in soup.select("a[href*='.mp4']"):
             title = link.text.strip()
             link_end = link["href"].split("=")[1] ## TODO Make less insecure
+            file_name = link_end
             video_url = root + link_end
 
             try:
@@ -62,7 +63,8 @@ class HouseScraper(BaseScraper):
                     results.append({
                         "title": title,
                         "url": video_url,
-                        "date": date_obj
+                        "date": date_obj,
+                        "file_name": file_name
                     })
 
             except Exception as e:

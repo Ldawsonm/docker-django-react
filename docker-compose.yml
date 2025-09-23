@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.3"
 
 services:
   django:
@@ -15,6 +15,9 @@ services:
       - media:/srv/app/media
     depends_on:
       - db
+      - redis
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/srv/app/credentials/google-vid-int.json
   react:
     build: ./frontend
     container_name: dev-react
@@ -54,6 +57,37 @@ services:
       - django
       - react
       - db
+
+  redis:
+    image: redis:7
+    container_name: dev-redis
+
+  worker:
+    build: ./backend
+    container_name: dev-worker
+    command: celery -A api worker -l INFO --concurrency=2
+    env_file:
+      - ./.env.dev
+    volumes:
+      - ./backend/:/srv/app
+    depends_on:
+      - django
+      - redis
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/srv/app/credentials/google-vid-int.json
+  beat:
+    build: ./backend
+    container_name: dev-beat
+    command: celery -A api beat -l INFO
+    env_file:
+      - ./.env.dev
+    volumes:
+      - ./backend/:/srv/app
+    depends_on:
+      - django
+      - redis
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/srv/app/credentials/google-vid-int.json
 
 volumes:
   node_modules:

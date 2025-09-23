@@ -118,3 +118,18 @@ STATIC_URL = "/api_static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 MEDIA_URL = "/api_media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+CELERY_TIMEZONE = "America/Detroit"  # or your preferred TZ
+CELERY_BEAT_SCHEDULE = {
+    "scrape-videos-every-30-mins": {
+        "task": "videos.tasks.scrape_sources",
+        "schedule": 1800.0,
+    },
+    "sweep-pipeline-every-5-mins": {
+        "task": "videos.tasks.sweep_pipeline",
+        "schedule": 300.0,  # every 5 minutes
+    },
+}
+
