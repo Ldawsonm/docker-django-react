@@ -26,7 +26,7 @@ MANIFEST_BUCKET = "mi-vid-manifests"
 def scrape_house():
     house_scraper = HouseScraper()
     house_videos = house_scraper.fetch_videos()
-    logger.info(house_videos)
+    # logger.info(house_videos)
     for video in house_videos:
         video, created = Video.objects.get_or_create(
             source_url=video["source_url"],
@@ -67,7 +67,30 @@ def run_video_pipeline(self, video_id):
 @shared_task
 def create_transfer_job(video_id: int):
     video = Video.objects.get(id=video_id)
+
+    # Check if object already exists in GCS
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(video.bucket)
+    blob_path = f"{video.source}/{video.source_url}"
+    blob = bucket.blob(blob_path)
+
+    if blob.exists():
+        video.status = VideoStatus.TRANSFER_DONE
+        video.save()
+        return video.id
+
     sts = storage_transfer.StorageTransferServiceClient()
+
+    if video.sts_job_name:
+        try:
+            existing_job = sts.get_transfer_job(name=video.sts_job_name, project_id=PROJECT_ID)
+            if existing_job:  # Job found
+                video.status = VideoStatus.TRANSFERRING
+                video.save()
+                return video.id
+        except Exception:
+            # If job not found, continue to create a new one
+            pass
 
     manifest_uri = create_manifest_file(video)
 
@@ -102,9 +125,9 @@ def remove_url_prefix(url: str) -> str:
         return url.removeprefix("http://")
     return url
 
-@shared_task(bind=True, autoretry_for=(Exception,), retry_backoff=True, max_retries=30)
+@shared_task(bind=True, max_retries=30)
 def poll_transfer_until_done(self, video_id):
-    logger.info(f"[poll_transfer_until_done] started for Video {video_id}")
+    # logger.info(f"[poll_transfer_until_done] started for Video {video_id}")
     video = Video.objects.get(id=video_id)
     client = storage_transfer_v1.StorageTransferServiceClient()
 
@@ -140,27 +163,27 @@ def start_transcription(self, video_id):
 
     video.gcs_object = remove_url_prefix(video.source_url)
 
-    op = client.annotate_video(
-        request={
-            "features": [vi.Feature.SPEECH_TRANSCRIPTION],
-            "input_uri": f"gs://{video.bucket}/{video.source}/{video.gcs_object}",
-            "video_context": vi.VideoContext(
-                speech_transcription_config=vi.SpeechTranscriptionConfig(
-                    language_code="en-US",
-                    enable_automatic_punctuation=True,
-                )
-            ),
-        }
-    )
-    video.vi_operation_name = op.operation.name
-    video.status = VideoStatus.TRANSCRIBING
+    # op = client.annotate_video(
+    #     request={
+    #         "features": [vi.Feature.SPEECH_TRANSCRIPTION],
+    #         "input_uri": f"gs://{video.bucket}/{video.source}/{video.gcs_object}",
+    #         "video_context": vi.VideoContext(
+    #             speech_transcription_config=vi.SpeechTranscriptionConfig(
+    #                 language_code="en-US",
+    #                 enable_automatic_punctuation=True,
+    #             )
+    #         ),
+    #     }
+    # )
+    # video.vi_operation_name = op.operation.name
+    # video.status = VideoStatus.TRANSCRIBING
     video.save()
     return video.id
 
 
-@shared_task(bind=True, autoretry_for=(Exception,), retry_backoff=True, max_retries=60)
+@shared_task(bind=True, max_retries=60)
 def poll_transcription_until_done(self, video_id):
-    logger.info(f"[poll_transcriptions_until_done] started for Video {video_id}")
+    # logger.info(f"[poll_transcriptions_until_done] started for Video {video_id}")
     
 
     video = Video.objects.get(id=video_id)
