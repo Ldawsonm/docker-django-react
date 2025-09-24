@@ -123,8 +123,12 @@ CELERY_BROKER_URL = "redis://redis:6379/0"
 CELERY_RESULT_BACKEND = "redis://redis:6379/0"
 CELERY_TIMEZONE = "America/Detroit"  # or your preferred TZ
 CELERY_BEAT_SCHEDULE = {
-    "scrape-videos-every-30-mins": {
-        "task": "videos.tasks.scrape_sources",
+    "scrape-house-every-30-mins": {
+        "task": "videos.tasks.scrape_house",
+        "schedule": 1800.0,
+    },
+    "scrape-senate-every-30-mins": {
+        "task": "videos.tasks.scrape_senate",
         "schedule": 1800.0,
     },
     "sweep-pipeline-every-5-mins": {

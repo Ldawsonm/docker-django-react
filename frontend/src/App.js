@@ -1,26 +1,41 @@
-import React from "react";
-import logo from "./logo.svg";
-import "./App.css";
+import React, { useEffect, useState } from "react";
+import VideoSourceList from "./components/VideoSourceList";
+import VideoPlayer from "./components/VideoPlayer";
 
-function App() {
+const App = () => {
+  const [videos, setVideos] = useState([]);
+  const [selectedVideo, setSelectedVideo] = useState(null);
+
+  useEffect(() => {
+    // Fetch from your Django API
+    fetch("/api/videos/") // adjust URL as needed
+      .then((res) => res.json())
+      .then((data) => setVideos(data));
+  }, []);
+
+  const grouped = videos.reduce((acc, video) => {
+    acc[video.source] = acc[video.source] || [];
+    acc[video.source].push(video);
+    return acc;
+  }, {});
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload. 
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn...
-        </a>
-      </header>
+    <div className="flex">
+      <aside className="w-1/3 p-4 border-r h-screen overflow-y-auto">
+        {Object.entries(grouped).map(([source, vids]) => (
+          <VideoSourceList
+            key={source}
+            source={source}
+            videos={vids}
+            onSelect={setSelectedVideo}
+          />
+        ))}
+      </aside>
+      <main className="flex-1 p-4">
+        <VideoPlayer video={selectedVideo} />
+      </main>
     </div>
   );
-}
+};
 
 export default App;

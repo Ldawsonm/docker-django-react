@@ -5,10 +5,12 @@ from urllib.parse import urlparse, parse_qs
 import requests
 from bs4 import BeautifulSoup
 # from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 from .base import BaseScraper
 from ..date_parse import parse_date_from_title
 
 HOUSE_URL = "https://house.mi.gov/VideoArchive"
+BASE_URL = "https://house.mi.gov"
 HOUSE_VIDEO_ROOT = "https://www.house.mi.gov/ArchiveVideoFiles/"
 source = "house"
 
@@ -36,6 +38,7 @@ def resolve_video_url(href: str) -> str | None:
 class HouseScraper(BaseScraper):
     
     def fetch_videos(self):
+        cutoff = datetime.now(timezone.utc) - self.cutoff
         source = "house"
         url = HOUSE_URL
         resp = requests.get(url, timeout=30, verify=False)
@@ -48,7 +51,9 @@ class HouseScraper(BaseScraper):
         for link in soup.select("a[href*='.mp4']"):
             title = link.text.strip()
             href = link["href"]
+            player_url = f"{BASE_URL}{href}"
             video_url = resolve_video_url(href)
+            # print(video_url)
             if not video_url:
                 continue  # skip if can't resolve
 
@@ -57,14 +62,15 @@ class HouseScraper(BaseScraper):
 
             # extract date if present
             published_at = parse_date_from_title(title)
-            if not published_at or published_at < self.cutoff:
+            if not published_at or published_at < cutoff:
                 # print(f"video published at {published_at}. Skipping this.")
                 continue
             vid_info = {
                 "title": title,
                 "source": source,
                 "published_at": published_at,
-                "source_url": video_url
+                "source_url": video_url,
+                "player_url": player_url
             }
             results.append(vid_info)
         return results

@@ -31,26 +31,7 @@ def fetch_page(page, results):
         return data.get("allFiles", [])  
 source = "senate"
 
-def resolve_video_url(href: str) -> str | None:
-    """
-    Convert archive player links into direct MP4 file links.
-    """
-    parsed = urlparse(href)
 
-    # Case 1: It’s a player link with ?video= param
-    if parsed.path.endswith("VideoArchivePlayer"):
-        qs = parse_qs(parsed.query)
-        if "video" in qs:
-            filename = qs["video"][0]
-            base = HOUSE_VIDEO_ROOT
-            return f"{base}{filename}"
-
-    # Case 2: Already a raw MP4 link
-    if parsed.path.endswith(".mp4"):
-        return href if href.startswith("http") else f"https://{parsed.netloc}{parsed.path}"
-
-    # Fallback: unsupported href
-    return None
 
 class SenateScraper(BaseScraper):
     
@@ -84,12 +65,14 @@ class SenateScraper(BaseScraper):
                 video_id = item["_id"]
                 title = item.get("metadata", {}).get("filename", "Untitled")
                 mp4_url = f"https://dlttx48mxf9m3.cloudfront.net/outputs/{video_id}/Default/MP4/out_1080.mp4"
+                player_url = f"https://imd0mxanj2.execute-api.us-west-2.amazonaws.com/ssr/watch/{video_id}"
 
                 all_videos.append({
                     "title": title,
                     "source": source,
                     "published_at": video_date,
-                    "source_url": mp4_url
+                    "source_url": mp4_url,
+                    "player_url": player_url
                 })
 
         return all_videos

@@ -1,5 +1,7 @@
 import re
 from datetime import datetime
+from django.utils import timezone
+
 
 DATE_RE = re.compile(
     r"(?:[A-Za-z]+,\s*)?"           # optional weekday like "Tuesday, "
@@ -23,7 +25,7 @@ def parse_date_from_title(title: str) -> datetime | None:
     # Try full month first (September), then abbreviated (Sep)
     for fmt in ("%B %d %Y", "%b %d %Y"):
         try:
-            return datetime.strptime(f"{month} {day} {year}", fmt)
+            return timezone.make_aware(datetime.strptime(f"{month} {day} {year}", fmt))
         except ValueError:
             continue
     return None

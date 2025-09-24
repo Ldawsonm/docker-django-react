@@ -43,7 +43,8 @@ class VideoStatus(models.TextChoices):
 class Video(models.Model):
     title = models.CharField(max_length=500)
     source = models.CharField(max_length=20)  # "house" or "senate"
-    source_url = models.URLField(unique=True)
+    source_url = models.URLField(default="")
+    player_url = models.URLField(default="")
     published_at = models.DateTimeField()
 
     bucket = models.CharField(max_length=255, default="mi-vid-transcription")

@@ -1,37 +1,20 @@
-# core/tasks.py
-# import re
-# import requests
-# from bs4 import BeautifulSoup
 from datetime import datetime
 from celery import shared_task, chain
 from .models import Video, VideoStatus
-from utils.scrapers.mi_house import HouseScraper
+from .utils.scrapers.mi_house import HouseScraper
+from .utils.scrapers.mi_senate import SenateScraper
 
-from google.cloud.storage_transfer_v1 import types as st_types
+# from google.cloud.storage_transfer_v1 import types as st_types
 from google.longrunning import operations_pb2
 
-from google.cloud import storage_transfer, videointelligence_v1 as vi
-from celery import shared_task
-from .models import Video, VideoStatus
-from django.conf import settings
-from datetime import datetime
-
-from google.cloud import storage_transfer
-from google.cloud import storage
-from datetime import datetime
-from .models import Video, VideoStatus
-
-from google.cloud import storage_transfer_v1
+from google.cloud import storage_transfer_v1, storage, storage_transfer, videointelligence_v1 as vi
 
 
 from google.api_core import operation
 from google.cloud.videointelligence_v1 import AnnotateVideoResponse
 
 import json
-
-from celery import shared_task
 from django.utils import timezone
-from .models import Video, VideoStatus
 
 import logging
 logger = logging.getLogger(__name__)
@@ -39,113 +22,34 @@ logger = logging.getLogger(__name__)
 PROJECT_ID = "direct-scheme-472916-d7"
 MANIFEST_BUCKET = "mi-vid-manifests"
 
-# HOUSE_URL = "https://house.mi.gov/VideoArchive"
-# SENATE_URL = "https://cloud.castus.tv/vod/misenate/?page=ALL"
-
-# DATE_RE = re.compile(
-#     r"(?:[A-Za-z]+,\s*)?"           # optional weekday like "Tuesday, "
-#     r"([A-Za-z]+)\s+"               # month name or abbr (captured)
-#     r"(\d{1,2})(?:st|nd|rd|th)?\s*" # day number with optional suffix
-#     r",?\s*"                        # optional comma
-#     r"(\d{4})"                      # year
-# )
-
-# from urllib.parse import urlparse, parse_qs
-
-# HOUSE_VIDEO_ROOT = "https://www.house.mi.gov/ArchiveVideoFiles/"
-# SENATE_VIDEO_ROOT = "https://www.senate.michigan.gov/ArchiveVideoFiles/"  # example
-
-# def resolve_video_url(href: str, source: str) -> str | None:
-#     """
-#     Convert archive player links into direct MP4 file links.
-#     """
-#     parsed = urlparse(href)
-
-#     # Case 1: It’s a player link with ?video= param
-#     if parsed.path.endswith("VideoArchivePlayer"):
-#         qs = parse_qs(parsed.query)
-#         if "video" in qs:
-#             filename = qs["video"][0]
-#             base = HOUSE_VIDEO_ROOT if source == "house" else SENATE_VIDEO_ROOT
-#             return f"{base}{filename}"
-
-#     # Case 2: Already a raw MP4 link
-#     if parsed.path.endswith(".mp4"):
-#         return href if href.startswith("http") else f"https://{parsed.netloc}{parsed.path}"
-
-#     # Fallback: unsupported href
-#     return None
-
-
-# def parse_date_from_title(title: str) -> datetime | None:
-#     # Normalize any weird spaces (NBSP)
-#     title = title.replace("\xa0", " ")
-#     m = DATE_RE.search(title)
-#     if not m:
-#         return None
-
-#     month_raw, day, year = m.groups()
-#     # Strip trailing dot on abbreviations (e.g., "Sept.")
-#     month = month_raw.rstrip(".")
-
-#     # Try full month first (September), then abbreviated (Sep)
-#     for fmt in ("%B %d %Y", "%b %d %Y"):
-#         try:
-#             return datetime.strptime(f"{month} {day} {year}", fmt)
-#         except ValueError:
-#             continue
-#     return None
-
-# def parse_date_with_suffix(text: str):
-#     # Remove weekday if present
-#     text = re.sub(r"^[A-Za-z]+,\s+", "", text)  # drop "Thursday, "
-#     # Remove suffixes like "st", "nd", "rd", "th"
-#     text = re.sub(r"(\d{1,2})(st|nd|rd|th)", r"\1", text)
-#     try:
-#         return datetime.strptime(text.strip(), "%B %d, %Y")
-#     except ValueError:
-#         return None
-
 @shared_task
-def scrape_sources():
-    # cutoff = datetime.now() - timedelta(days=30)
-    # for source, url in (("house", HOUSE_URL), ("senate", SENATE_URL)):
-    # for i in range(1):
-    #     source = "house"
-    #     url = HOUSE_URL
-    #     resp = requests.get(url, timeout=30, verify=False)
-    #     resp.raise_for_status()
-    #     soup = BeautifulSoup(resp.text, "html.parser")
-        # print("fetched the page")
-    
-        # for link in soup.select("a[href*='.mp4']"):
-            # title = link.text.strip()
-            # href = link["href"]
-            # video_url = resolve_video_url(href, source)
-            # if not video_url:
-            #     continue  # skip if can't resolve
-
-
-            # # print(f"found video {title} with link {video_url}")
-
-            # # extract date if present
-            # published_at = parse_date_from_title(title)
-            # if not published_at or published_at < cutoff:
-            #     # print(f"video published at {published_at}. Skipping this.")
-            #     continue
+def scrape_house():
     house_scraper = HouseScraper()
     house_videos = house_scraper.fetch_videos()
+    logger.info(house_videos)
     for video in house_videos:
         video, created = Video.objects.get_or_create(
             source_url=video["source_url"],
-            defaults={"title": video["title"], "source": video["source"], "published_at": video["published_at"]},
+            defaults={"title": video["title"], "source": video["source"], "published_at": video["published_at"], "player_url": video["player_url"]},
+        )
+        print(f"successfully created or retrieved video object {video.id}")
+        if created or video.status in [VideoStatus.NEW, VideoStatus.TRANSFER_FAILED, VideoStatus.TRANSCRIBE_FAILED]:
+            # print(f"running transcription pipeline for video {video.id}")
+            run_video_pipeline.delay(video.id)
+
+@shared_task
+def scrape_senate():
+    senate_scraper = SenateScraper()
+    senate_videos = senate_scraper.fetch_videos()
+    for video in senate_videos:
+        video, created = Video.objects.get_or_create(
+            source_url=video["source_url"],
+            defaults={"title": video["title"], "source": video["source"], "published_at": video["published_at"], "player_url": video["player_url"]},
         )
         # print(f"successfully created or retrieved video object {video.id}")
         if created or video.status in [VideoStatus.NEW, VideoStatus.TRANSFER_FAILED, VideoStatus.TRANSCRIBE_FAILED]:
             # print(f"running transcription pipeline for video {video.id}")
             run_video_pipeline.delay(video.id)
-
-
 
 
 
@@ -159,25 +63,6 @@ def run_video_pipeline(self, video_id):
         poll_transcription_until_done.s(),
     )()
 
-
-
-
-
-def create_manifest_file(video: Video) -> str:
-    """Create a manifest TSV file in GCS and return its URI."""
-    client = storage.Client()
-    bucket = client.bucket(MANIFEST_BUCKET)
-
-    filename = f"{video.source}_{video.id}.tsv"
-    blob = bucket.blob(filename)
-
-    manifest = "TsvHttpData-1.0\n" + video.source_url + "\n"
-    blob.upload_from_string(manifest, content_type="text/plain")
-
-    blob.acl.all().grant_read()
-    blob.acl.save()
-
-    return f"gs://{MANIFEST_BUCKET}/{filename}"
 
 @shared_task
 def create_transfer_job(video_id: int):
@@ -364,3 +249,20 @@ def sweep_pipeline():
                 logger.error(f"Transcription Failed for {video.id}. Restarting Pipeline for video")
                 run_video_pipeline.delay(video.id)
     logger.info("Completed pipeline sweep")
+
+
+def create_manifest_file(video: Video) -> str:
+    """Create a manifest TSV file in GCS and return its URI."""
+    client = storage.Client()
+    bucket = client.bucket(MANIFEST_BUCKET)
+
+    filename = f"{video.source}_{video.id}.tsv"
+    blob = bucket.blob(filename)
+
+    manifest = "TsvHttpData-1.0\n" + video.source_url + "\n"
+    blob.upload_from_string(manifest, content_type="text/plain")
+
+    blob.acl.all().grant_read()
+    blob.acl.save()
+
+    return f"gs://{MANIFEST_BUCKET}/{filename}"
