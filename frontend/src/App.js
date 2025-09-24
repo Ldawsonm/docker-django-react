@@ -20,8 +20,8 @@ const App = () => {
   }, {});
 
   return (
-    <div className="flex flex-row h-screen">
-      <aside className="overflow-y-auto basis-1/3">
+    <div className="flexbox-container">
+      <aside className="">
         {Object.entries(grouped).map(([source, vids]) => (
           <VideoSourceList
             key={source}
@@ -31,7 +31,7 @@ const App = () => {
           />
         ))}
       </aside>
-      <main className="basis-2/3 flex-1 p-4 flex items-center justify-center">
+      <main className="">
         <VideoPlayer video={selectedVideo} />
       </main>
     </div>
