@@ -6,7 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 # from datetime import datetime, timedelta
 from .base import BaseScraper
-from utils.date_parse import parse_date_from_title
+from ..date_parse import parse_date_from_title
 
 HOUSE_URL = "https://house.mi.gov/VideoArchive"
 HOUSE_VIDEO_ROOT = "https://www.house.mi.gov/ArchiveVideoFiles/"
@@ -42,13 +42,13 @@ class HouseScraper(BaseScraper):
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "html.parser")
         # print("fetched the page")
-
+        
         results = []
 
         for link in soup.select("a[href*='.mp4']"):
             title = link.text.strip()
             href = link["href"]
-            video_url = resolve_video_url(href, source)
+            video_url = resolve_video_url(href)
             if not video_url:
                 continue  # skip if can't resolve
 
