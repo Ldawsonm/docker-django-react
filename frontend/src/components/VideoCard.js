@@ -18,7 +18,7 @@ const VideoCard = ({ video, onSelect }) => {
         className="text-blue-600 text-sm underline"
         onClick={(e) => e.stopPropagation()} // don't trigger select
       >
-        Open Video
+        Video Link
       </a>
 
       <button
@@ -28,7 +28,7 @@ const VideoCard = ({ video, onSelect }) => {
           onSelect(video);
         }}
       >
-        ▶ Play
+        View Transcription
       </button>
     </div>
   );
